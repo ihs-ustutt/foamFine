@@ -1,0 +1,6 @@
+mixingInterface/mixingInterfacePointPatch.C
+mixingInterface/mixingInterfacePolyPatch.C
+mixingInterface/mixingInterfaceFvPatch.C
+mixingInterface/mixingInterfaceFvPatchFields.C
+
+LIB = $(FOAM_USER_LIBBIN)/libmixingPlane

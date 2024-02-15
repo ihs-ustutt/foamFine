@@ -1,0 +1,3 @@
+pressureTotCarnot.C
+
+LIB = $(FOAM_USER_LIBBIN)/libpressureTotCarnot

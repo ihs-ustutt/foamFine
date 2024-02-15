@@ -1,0 +1,3 @@
+mappedFieldFixedValueFvPatchFields.C
+
+LIB = $(FOAM_USER_LIBBIN)/libmappedFieldFixedValue
