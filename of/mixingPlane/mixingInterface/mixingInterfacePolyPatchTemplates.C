@@ -50,7 +50,7 @@ Foam::tmp<Foam::Field<Type> > Foam::mixingInterfacePolyPatch::toProfile
     Field<Type>& rField = trField.ref();
     
     // Transform into cylinidrical coordinate system
-    const Field<Type>& pfCyl = transformToCylindrical(pf);
+    const Field<Type> pfCyl = Field<Type>(transformToCylindrical(pf));
     
     const Field<scalar>& area = this->magFaceAreas();
    
@@ -76,7 +76,7 @@ Foam::tmp<Foam::Field<Type> > Foam::mixingInterfacePolyPatch::toProfile
     }
    
     forAll (rField,i) reduce(rField[i], sumOp< Type >()); 
-        
+
     return trField;
 }
 
@@ -100,7 +100,7 @@ Foam::mixingInterfacePolyPatch::circumferentialAverage
     Field<Type>& rField = trField.ref();
     
     // Interpolate from patch to ribbon
-    const Field<Type>& ribbonField = this->toProfile(tpf);
+    const Field<Type> ribbonField = Field<Type>(this->toProfile(tpf));
     
     // Interpolate from ribbon to patch
     for (label iplane = 0; iplane < numPlanes(); iplane++)
@@ -140,8 +140,7 @@ Foam::tmp<Foam::Field<Type> > Foam::mixingInterfacePolyPatch::interpolate
     Field<Type>& rField = trField.ref();
     
     // Interpolate from shadow patch to ribbon
-    const Field<Type>& ribbonField = 
-        shadowPatch().toProfile(spf);
+    const Field<Type> ribbonField = Field<Type>(shadowPatch().toProfile(spf));
     
     // Interpolate from ribbon to patch
     for (label iplane = 0; iplane < numPlanes(); iplane++)

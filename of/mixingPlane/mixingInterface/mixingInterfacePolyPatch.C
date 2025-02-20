@@ -85,7 +85,7 @@ void Foam::mixingInterfacePolyPatch::updateRotationTensors() const
         radialAxis.replace(1, 1);
     }
 
-    const vectorField& globalVectors = this->faceCentres() - origin();
+    const vectorField globalVectors( this->faceCentres() - origin() );
      
     // Transform globalVectors in such a way, that phi is zero. The angle
     // between the transformed and non-transformed vector corresponds to the
@@ -1737,9 +1737,10 @@ Foam::tensorField Foam::mixingInterfacePolyPatch::calcRotationTensor
     nvi = nvi/mag(nvi);
     nvf = nvf/mag(nvf);
 
-    const vectorField& crossNviNvf = nvi ^ nvf;
-    const scalarField& cosTheta = nvi & nvf;
-    const scalarField& sinTheta = mag(crossNviNvf) * sign(crossNviNvf & k);
+    const vectorField crossNviNvf = vectorField(nvi ^ nvf);
+    const scalarField cosTheta = scalarField(nvi & nvf);
+    const scalarField sinTheta 
+        = scalarField(mag(crossNviNvf) * sign(crossNviNvf & k));
 
     const tensorField I_F(vi.size(), I);
     const tensorField rotationT_F(vi.size(), rotationT);
