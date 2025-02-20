@@ -85,7 +85,7 @@ void Foam::mixingInterfacePolyPatch::updateRotationTensors() const
         radialAxis.replace(1, 1);
     }
 
-    vectorField globalVectors = this->faceCentres() - origin();
+    const vectorField& globalVectors = this->faceCentres() - origin();
      
     // Transform globalVectors in such a way, that phi is zero. The angle
     // between the transformed and non-transformed vector corresponds to the
@@ -610,10 +610,10 @@ Foam::pointField Foam::mixingInterfacePolyPatch::calcRibbons() const
             );
 
             pointField patchGlobalProfile = 
-                cs_().localPosition(this->localPoints());
+                pointField(cs_().localPosition(this->localPoints()));
 
             pointField shadowGlobalProfile = 
-                cs_().localPosition(shadowPatch().localPoints());
+                pointField(cs_().localPosition(shadowPatch().localPoints()));
             
             // Set sweep axis to zero. I don´t think we need a definition of a 
             // sweep axis, because averaging is always done in circumferential
@@ -1732,20 +1732,20 @@ Foam::tensorField Foam::mixingInterfacePolyPatch::calcRotationTensor
         k3*k1,       k3*k2,       k3*k3 - 1.0);
 
     // Project both vectors onto the plane defined by the rotation axis
-    vectorField nvi = -(projectionT & vi);
-    vectorField nvf = -(projectionT & vf);
+    vectorField nvi = vectorField(-(projectionT & vi));
+    vectorField nvf = vectorField(-(projectionT & vf));
     nvi = nvi/mag(nvi);
     nvf = nvf/mag(nvf);
 
-    const vectorField crossNviNvf = nvi ^ nvf;
-    const scalarField cosTheta = nvi & nvf;
-    const scalarField sinTheta = mag(crossNviNvf) * sign(crossNviNvf & k);
+    const vectorField& crossNviNvf = nvi ^ nvf;
+    const scalarField& cosTheta = nvi & nvf;
+    const scalarField& sinTheta = mag(crossNviNvf) * sign(crossNviNvf & k);
 
     const tensorField I_F(vi.size(), I);
     const tensorField rotationT_F(vi.size(), rotationT);
     const tensorField projectionT_F(vi.size(), projectionT);
 
-    return I_F + sinTheta*rotationT_F + (1 - cosTheta)*projectionT_F;
+    return tensorField(I_F + sinTheta*rotationT_F + (1 - cosTheta)*projectionT_F);
 }
 
 void Foam::mixingInterfacePolyPatch::write(Ostream& os) const

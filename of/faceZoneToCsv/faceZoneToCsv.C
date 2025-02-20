@@ -105,7 +105,7 @@ int main(int argc, char *argv[])
           //
           volScalarField fieldField(fieldHeader, mesh);
           //interpolate fieldValues from cell to the cellfaces
-          surfaceScalarField fieldFaceField =
+          const surfaceScalarField& fieldFaceField =
             fvc::interpolate(fieldField, fieldName) ;
           surfaceScalarField phiField(phiHeader, mesh);
                 
@@ -157,7 +157,7 @@ int main(int argc, char *argv[])
           volVectorField fieldField(fieldHeader, mesh);
 
           //interpolate fieldValues from cell to the cellfaces
-          surfaceVectorField fieldFaceField = 
+          const surfaceVectorField& fieldFaceField = 
             fvc::interpolate(fieldField, fieldName) ;
           surfaceScalarField phiField(phiHeader, mesh);
 
@@ -214,7 +214,7 @@ int main(int argc, char *argv[])
           volSymmTensorField fieldField(fieldHeader, mesh);
 
           //interpolate fieldValues from cell to the cellfaces
-          surfaceSymmTensorField fieldFaceField = 
+          const surfaceSymmTensorField& fieldFaceField = 
             fvc::interpolate(fieldField, fieldName) ;
           surfaceScalarField phiField(phiHeader, mesh);
 

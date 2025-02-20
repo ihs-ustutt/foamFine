@@ -178,8 +178,7 @@ bool Foam::functionObjects::pressureTotCarnot::calc()
                 p.mesh().time().timeName(),
                 p.mesh(),
                 IOobject::NO_READ,
-                IOobject::NO_WRITE,
-                IOobject::REGISTER
+                IOobject::NO_WRITE
             ),
             std::move(calcPressure(p))
         );

@@ -110,7 +110,7 @@ mappedFieldFixedValueFvPatchField
     {
 
         const scalar t = this->db().time().timeOutputValue();
-        Field<Type > mappedVelocity = uniformValue_->value(t);
+        const Field<Type >& mappedVelocity = uniformValue_->value(t);
         
         const scalar mappedPhi = mag(
             gSum(

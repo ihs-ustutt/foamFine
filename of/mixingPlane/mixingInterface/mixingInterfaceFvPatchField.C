@@ -206,9 +206,9 @@ const scalarField mixingInterfaceFvPatchField<Type>::calcNormalU() const
 
     tmp<Field<vector> > patchInternalFieldU = patchField.patchInternalField();
 
-    const vectorField patchFieldU = patchInternalFieldU;
+    const vectorField& patchFieldU = patchInternalFieldU;
 
-    const scalarField uNormal = patchFieldU & mixingPlanePatch_.nf();
+    const scalarField& uNormal = patchFieldU & mixingPlanePatch_.nf();
     
     return uNormal;
 }
@@ -262,17 +262,17 @@ tmp<Field<Type> > mixingInterfaceFvPatchField<Type>::consistentAveU() const
 
         // Get normal vectors 
         // Use no reference here, otherwise you will get garbage
-        const vectorField shNormalVec = this->shadowPatchField().patch().nf();
-        const vectorField normalVec = mixingPlanePatch_.nf();
+        const vectorField& shNormalVec = this->shadowPatchField().patch().nf();
+        const vectorField& normalVec = mixingPlanePatch_.nf();
         
         // Transform normal vectors into cylindrical coordinate system and 
         // eliminate phi direction
         vectorField shNormalVecCyl = 
-            mixingPlanePatch_.shadowPatch().transformToCylindrical(shNormalVec);
+            vectorField(mixingPlanePatch_.shadowPatch().transformToCylindrical(shNormalVec));
         shNormalVecCyl.replace(tangential,0);
 
         vectorField normalVecCyl = 
-                mixingPlanePatch_.transformToCylindrical(normalVec);
+                vectorField(mixingPlanePatch_.transformToCylindrical(normalVec));
         normalVecCyl.replace(tangential,0);
         
         // The axis around the velocity vector rotates is the phi axis
@@ -302,47 +302,47 @@ tmp<Field<Type> > mixingInterfaceFvPatchField<Type>::consistentAveU() const
     Field<Type>& rField = trField.ref();
     
     // Get shadow patch field
-    Field<Type> shField = this->shadowPatchField().patchInternalField();
+    const Field<Type>& shField = this->shadowPatchField().patchInternalField();
     
     // Get radius of faces needed for averaging of the tangential velocity
     const vectorField& shCellCenter = this->shadowPatchField().patch().Cf();
     
-    const vectorField shCellCenterCyl = 
+    const vectorField& shCellCenterCyl = 
         mixingPlanePatch_.shadowPatch().transformToCylindrical(shCellCenter);
     
-    const scalarField radius = shCellCenterCyl.component(radial);
+    const scalarField& radius = shCellCenterCyl.component(radial);
     
     //Build an average radius needed for averaging of the tangential veloctiy
-    const scalarField radiusAve = radius / 
+    const scalarField radiusAve = scalarField( radius / 
         (
             mixingPlanePatch_.shadowPatch().circumferentialAverage(radius)
             + SMALL
-        );
+        ));
     
     // Transform the velocity Field
-    Field<Type> shFieldCyl = 
+    const Field<Type>& shFieldCyl = 
         mixingPlanePatch_.shadowPatch().transformToCylindrical(shField);
     
-    Field<Type> shFieldLoc = transform(forwardTransform_, shFieldCyl);
+    const Field<Type>& shFieldLoc = transform(forwardTransform_, shFieldCyl);
     
     // Averaging of the velocity vector
-    const scalarField uNormal = shFieldLoc.component(normal);
-    const scalarField uNormalAveraged = mixingPlanePatch_.interpolate(uNormal);
+    const scalarField& uNormal = shFieldLoc.component(normal);
+    const scalarField& uNormalAveraged = mixingPlanePatch_.interpolate(uNormal);
     
     // Use flux averaging for the radial component
     const scalarField& shFluxWeights = this->shadowPatchField().fluxWeights();
     
-    const scalarField uWRadial = shFieldLoc.component(radial) * shFluxWeights;
+    const scalarField& uWRadial = shFieldLoc.component(radial) * shFluxWeights;
     
-    const scalarField uRadialAveraged = mixingPlanePatch_.interpolate(uWRadial);
+    const scalarField& uRadialAveraged = mixingPlanePatch_.interpolate(uWRadial);
     
-    const scalarField uWTangential = shFieldLoc.component(normal) * 
+    const scalarField& uWTangential = shFieldLoc.component(normal) * 
         shFieldLoc.component(tangential) * radiusAve;
     
-    const scalarField uTangentialAveraged = mixingPlanePatch_.interpolate
+    const scalarField uTangentialAveraged = scalarField(mixingPlanePatch_.interpolate
         (
             uWTangential
-        ) / uNormalAveraged;
+        ) / uNormalAveraged);
     
     Field<Type> hsFieldLoc(this->patch().size());
     hsFieldLoc.replace(radial,uRadialAveraged);
@@ -350,7 +350,7 @@ tmp<Field<Type> > mixingInterfaceFvPatchField<Type>::consistentAveU() const
     hsFieldLoc.replace(normal,uNormalAveraged);
     
     // Transform the velocity vector back into cartesian coordinates
-    Field<Type> uAveragedCyl = transform(backwardTransform_, hsFieldLoc);
+    const Field<Type>& uAveragedCyl = transform(backwardTransform_, hsFieldLoc);
     
     rField = mixingPlanePatch_.transformToCartesian(uAveragedCyl);
     
@@ -369,22 +369,22 @@ tmp<Field<Type> > mixingInterfaceFvPatchField<Type>::consistentAveP() const
     Field<Type>& rField = trField.ref();
     
     // Get shadow pressure field
-    Field<Type> shField = this->shadowPatchField().patchInternalField();
+    const Field<Type>& shField = this->shadowPatchField().patchInternalField();
     
     // Normal velocity is needed for the correction of the pressure
     const scalarField& uNormal = calcNormalU();
     
-    const scalarField uNormalPow = pow(uNormal, 2);
+    const scalarField& uNormalPow = pow(uNormal, 2);
     
-    const scalarField uNormalAveraged =
+    const scalarField& uNormalAveraged =
         mixingPlanePatch_.circumferentialAverage(uNormal);
     
-    const scalarField pressure = shField.component(0);
+    const scalarField& pressure = shField.component(0);
     
     // Average the pressure
-    scalarField pAveraged = mixingPlanePatch_.interpolate(pressure)
+    scalarField pAveraged = scalarField(mixingPlanePatch_.interpolate(pressure)
         - mixingPlanePatch_.circumferentialAverage(uNormalPow)
-        + pow(uNormalAveraged, 2);
+        + pow(uNormalAveraged, 2));
     
     rField.replace(0, pAveraged);
     
@@ -405,7 +405,7 @@ tmp<Field<Type> > mixingInterfaceFvPatchField<Type>::patchValues() const
     
     Field<Type>& prField = ptrField.ref();
     
-    Field<Type> shField = this->shadowPatchField().patchInternalField();
+    const Field<Type>& shField = this->shadowPatchField().patchInternalField();
     
     const scalarField& mask = fluxMask();
     
@@ -419,7 +419,7 @@ tmp<Field<Type> > mixingInterfaceFvPatchField<Type>::patchValues() const
     {
         const scalarField& shadowFluxWeights = shadowPatchField().fluxWeights();
         
-       Field<Type> wShField = shadowFluxWeights.component(0) * shField;
+       const Field<Type>& wShField = shadowFluxWeights.component(0) * shField;
         
         prField = mask * mixingPlanePatch_.interpolate(wShField)
             + (1-mask) * this->patchInternalField();
@@ -429,13 +429,13 @@ tmp<Field<Type> > mixingInterfaceFvPatchField<Type>::patchValues() const
     {
         if (this->internalField().name() == "p")
         {
-            Field<Type> pAveraged = this->consistentAveP();
+            const Field<Type>& pAveraged = this->consistentAveP();
             
             prField = mask * pAveraged + (1-mask) * this->patchInternalField();
         }
         else
         {
-            Field<Type> uAveraged = this->consistentAveU();
+            const Field<Type>&  uAveraged = this->consistentAveU();
             
             prField = mask * uAveraged + (1-mask) * this->patchInternalField();
         }
@@ -576,7 +576,7 @@ void mixingInterfaceFvPatchField<Type>::initEvaluate
     }
     
     // Get values on the patch
-    Field<Type> patchFieldValues = this->patchValues();
+    const Field<Type>& patchFieldValues = this->patchValues();
     
     Field<Type>::operator=(patchFieldValues);
 }

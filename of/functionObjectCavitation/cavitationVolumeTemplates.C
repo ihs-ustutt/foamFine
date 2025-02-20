@@ -241,7 +241,7 @@ Type Foam::functionObjects::fieldValues::cavitationVolume::processValues
             Field<Type> weights(values.size(), pTraits<Type>::zero);
             
             // Correct the pressure
-            scalarField pressure = values.component(0) - patchAverage
+            const scalarField& pressure = values.component(0) - patchAverage
                 + 9.81 * (installDepth_ - heightAxisValue);
             
             // Get cavitating cells
