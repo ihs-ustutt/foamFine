@@ -144,12 +144,8 @@ const scalarField& mixingInterfaceFvPatchField<Type>::fluxMask() const
     }
     else
     {  
-        const scalarField& phip = this->patch().lookupPatchField
-        (
-            "phi",
-            reinterpret_cast<const surfaceScalarField*>(0),
-            reinterpret_cast<const scalar*>(0)
-        );
+        const surfaceScalarField::Patch& phip =
+        this->patch().template lookupPatchField<surfaceScalarField>("phi");
         
         // Use flux mask to decide wheter to use zeroGradient or fixedValue
         // If flux mask = 1 use interpolated value, otherwise use zeroGradient
